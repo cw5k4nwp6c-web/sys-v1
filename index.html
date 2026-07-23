@@ -111,6 +111,26 @@
            font-weight: 600;
            color: #d4af37;
        }
+       .header-buttons {
+           display: flex;
+           gap: 8px;
+           align-items: center;
+       }
+       .clear-btn {
+           background: transparent;
+           border: 1px solid #ef4444;
+           color: #ef4444;
+           padding: 6px 10px;
+           border-radius: 6px;
+           font-size: 12px;
+           cursor: pointer;
+           transition: background 0.2s, color 0.2s;
+           width: auto;
+       }
+       .clear-btn:hover {
+           background: #ef4444;
+           color: #fff;
+       }
        .logout-btn {
            background: transparent;
            border: 1px solid #ef4444;
@@ -196,7 +216,10 @@
 <div id="chatSection" style="display: none;">
 <div class="chat-header">
 <div class="chat-title">VIP Masa #7</div>
+<div class="header-buttons">
+<button class="clear-btn" onclick="clearChat()">Sohbeti Sil</button>
 <button class="logout-btn" onclick="logout()">Çıkış</button>
+</div>
 </div>
 <div id="chatMessages" class="chat-messages">
 <div class="message other"><b>Sistem:</b> Bağlantı kuruluyor...</div>
@@ -210,7 +233,7 @@
 <!-- FIREBASE BAĞLANTISI VE MANTIK -->
 <script type="module">
        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-       import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+       import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
        const firebaseConfig = {
            apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
            authDomain: "sys-v1.firebaseapp.com",
@@ -263,6 +286,20 @@
                });
                messagesDiv.scrollTop = messagesDiv.scrollHeight;
            });
+       }
+       window.clearChat = async function() {
+           if (confirm("Sohbet geçmişini kalıcı olarak silmek istediğine emin misin?")) {
+               try {
+                   const querySnapshot = await getDocs(collection(db, "messages"));
+                   let deletePromises = [];
+                   querySnapshot.forEach((document) => {
+                       deletePromises.push(deleteDoc(doc(db, "messages", document.id)));
+                   });
+                   await Promise.all(deletePromises);
+               } catch (e) {
+                   console.error("Sohbet silinemedi: ", e);
+               }
+           }
        }
        window.logout = function() {
            document.getElementById("username").value = "";
