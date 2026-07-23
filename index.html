@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Özel Sohbet Sistemi</title>
+<title>Güvenli Sohbet Odası</title>
 <style>
        body {
            background-color: #0d1117;
@@ -23,7 +23,7 @@
            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
            width: 320px;
        }
-       input, textarea {
+       input {
            width: 100%;
            padding: 10px;
            margin: 10px 0;
@@ -56,7 +56,7 @@
        }
        .chat-area {
            text-align: left;
-           height: 150px;
+           height: 200px;
            background: #0d1117;
            border: 1px solid #30363d;
            border-radius: 4px;
@@ -64,6 +64,10 @@
            overflow-y: auto;
            margin-bottom: 10px;
            font-size: 13px;
+       }
+       .msg {
+           margin-bottom: 6px;
+           word-break: break-all;
        }
 </style>
 </head>
@@ -77,38 +81,72 @@
 <button onclick="checkLogin()">Giriş Yap</button>
 <div id="errorMsg" class="error"></div>
 </div>
-<!-- ŞİFRE DOĞRUYSA AÇILACAK SOHBET EKRANI -->
-<div id="chatSection" class="box hidden" style="width: 380px;">
-<h2 style="color: #58a6ff; font-size: 18px; margin-top: 0;">💬 Sohbet Odası</h2>
+<!-- SOHBET EKRANI -->
+<div id="chatSection" class="box hidden" style="width: 400px;">
+<h2 style="color: #58a6ff; font-size: 18px; margin-top: 0;">💬 Canlı Sohbet Odası</h2>
 <div id="chatMessages" class="chat-area">
-<div><b>Sistem:</b> Sohbet odasına hoş geldin!</div>
+<div class="msg"><b>Sistem:</b> Bağlantı kuruluyor...</div>
 </div>
-<input type="text" id="chatInput" placeholder="Mesajınızı yazın...">
+<input type="text" id="chatInput" placeholder="Mesajınızı yazın..." onkeydown="if(event.key==='Enter') sendMessage()">
 <button onclick="sendMessage()">Gönder</button>
 <button onclick="logout()" style="background: #da3633; margin-top: 10px;">Çıkış Yap</button>
 </div>
-<script>
-       function checkLogin() {
-           var user = document.getElementById("username").value;
-           var pass = document.getElementById("password").value;
-           // Kullanıcı adı: admin, Şifre: 1234
+<!-- FIREBASE BAĞLANTISI VE MANTIK -->
+<script type="module">
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+       import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+       const firebaseConfig = {
+           apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
+           authDomain: "sys-v1.firebaseapp.com",
+           projectId: "sys-v1",
+           storageBucket: "sys-v1.firebasestorage.app",
+           messagingSenderId: "387697999264",
+           appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
+       };
+       const app = initializeApp(firebaseConfig);
+       const db = getFirestore(app);
+       let activeUser = "";
+       window.checkLogin = function() {
+           var user = document.getElementById("username").value.trim();
+           var pass = document.getElementById("password").value.trim();
+           // Kullanıcı adı ve şifreni buraya yazabilirsin (Şu an: admin / 1234)
            if (user === "admin" && pass === "1234") {
+               activeUser = user;
                document.getElementById("loginSection").classList.add("hidden");
                document.getElementById("chatSection").classList.remove("hidden");
+               loadMessages();
            } else {
                document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
            }
        }
-       function sendMessage() {
+       window.sendMessage = async function() {
            var input = document.getElementById("chatInput");
-           var messages = document.getElementById("chatMessages");
            if (input.value.trim() !== "") {
-               messages.innerHTML += "<div><b>Sen:</b> " + input.value + "</div>";
-               input.value = "";
-               messages.scrollTop = messages.scrollHeight;
+               try {
+                   await addDoc(collection(db, "messages"), {
+                       user: activeUser,
+                       text: input.value,
+                       time: serverTimestamp()
+                   });
+                   input.value = "";
+               } catch (e) {
+                   console.error("Mesaj gönderilemedi: ", e);
+               }
            }
        }
-       function logout() {
+       function loadMessages() {
+           const q = query(collection(db, "messages"), orderBy("time", "asc"));
+           onSnapshot(q, (snapshot) => {
+               let messagesDiv = document.getElementById("chatMessages");
+               messagesDiv.innerHTML = "";
+               snapshot.forEach((doc) => {
+                   let data = doc.data();
+                   messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
+               });
+               messagesDiv.scrollTop = messagesDiv.scrollHeight;
+           });
+       }
+       window.logout = function() {
            document.getElementById("username").value = "";
            document.getElementById("password").value = "";
            document.getElementById("errorMsg").innerText = "";
@@ -118,6 +156,8 @@
 </script>
 </body>
 </html>
+
+
 
 
 
