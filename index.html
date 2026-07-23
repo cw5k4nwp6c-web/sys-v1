@@ -277,8 +277,8 @@
            onSnapshot(q, (snapshot) => {
                let messagesDiv = document.getElementById("chatMessages");
                messagesDiv.innerHTML = "";
-               snapshot.forEach((doc) => {
-                   let data = doc.data();
+               snapshot.forEach((docItem) => {
+                   let data = docItem.data();
                    let msgDiv = document.createElement('div');
                    msgDiv.className = 'message ' + (data.user === activeUser ? 'user' : 'other');
                    msgDiv.textContent = data.text;
@@ -292,8 +292,8 @@
                try {
                    const querySnapshot = await getDocs(collection(db, "messages"));
                    let deletePromises = [];
-                   querySnapshot.forEach((document) => {
-                       deletePromises.push(deleteDoc(doc(db, "messages", document.id)));
+                   querySnapshot.forEach((documentSnapshot) => {
+                       deletePromises.push(deleteDoc(doc(db, "messages", documentSnapshot.id)));
                    });
                    await Promise.all(deletePromises);
                } catch (e) {
