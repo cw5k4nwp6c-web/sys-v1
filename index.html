@@ -87,6 +87,12 @@
        .btn:hover {
            opacity: 0.9;
        }
+       .error-msg {
+           color: #ef4444;
+           font-size: 13px;
+           margin-top: 12px;
+           display: none;
+       }
        /* Chat Ekranı */
        #chat-screen {
            display: none;
@@ -176,9 +182,10 @@
 <div class="casino-logo">VIP CASINO</div>
 <div class="casino-subtitle">Özel Masa Girişi</div>
 <div class="input-group">
-<input type="password" id="access-code" placeholder="VIP Kodunu Girin">
+<input type="password" id="access-code" placeholder="VIP Kodunu Girin" onkeypress="checkLoginEnter(event)">
 </div>
 <button class="btn" onclick="enterLounge()">GİRİŞ YAP</button>
+<div id="error-message" class="error-msg">Hatalı VIP Kodu!</div>
 </div>
 <!-- Chat Ekranı -->
 <div id="chat-screen">
@@ -190,21 +197,32 @@
 <!-- Mesajlar buraya gelecek -->
 </div>
 <div class="chat-input-area">
-<input type="text" id="message-input" placeholder="Mesaj yaz..." onkeypress="checkEnter(event)">
+<input type="text" id="message-input" placeholder="Mesaj yaz..." onkeypress="checkChatEnter(event)">
 <button class="send-btn" onclick="sendMessage()">Gönder</button>
 </div>
 </div>
 </div>
 <script>
+       // VIP Şifresi güncellendi
+       const CORRECT_VIP_CODE = "1asdfg22";
        function enterLounge() {
-           const code = document.getElementById('access-code').value;
-           // İstediğin şifreyi buraya yazabilirsin (Örn: "1421" veya özel bir kelime)
-           if (code.trim() !== "") {
+           const codeInput = document.getElementById('access-code');
+           const errorMsg = document.getElementById('error-message');
+           const enteredCode = codeInput.value.trim();
+           if (enteredCode === CORRECT_VIP_CODE) {
+               errorMsg.style.display = 'none';
                document.getElementById('login-screen').style.display = 'none';
                document.getElementById('chat-screen').style.display = 'flex';
                loadMessages();
            } else {
-               alert("Lütfen geçerli bir kod girin.");
+               errorMsg.style.display = 'block';
+               codeInput.value = '';
+               codeInput.focus();
+           }
+       }
+       function checkLoginEnter(e) {
+           if (e.key === 'Enter') {
+               enterLounge();
            }
        }
        function loadMessages() {
@@ -228,7 +246,7 @@
            container.scrollTop = container.scrollHeight;
            localStorage.setItem('vip_chat_messages', container.innerHTML);
        }
-       function checkEnter(e) {
+       function checkChatEnter(e) {
            if (e.key === 'Enter') {
                sendMessage();
            }
@@ -242,6 +260,9 @@
 </script>
 </body>
 </html>
+
+
+
 
  
 
