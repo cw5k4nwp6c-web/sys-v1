@@ -2,294 +2,156 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Güvenli Sohbet</title>
+<title>Güvenli Sohbet Odası</title>
 <style>
-       * {
-           box-sizing: border-box;
-           margin: 0;
-           padding: 0;
-           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-       }
        body {
-           background-color: #0f111a;
-           color: #e2e8f0;
+           background-color: #0d1117;
+           color: #c9d1d9;
+           font-family: monospace;
+           display: flex;
+           justify-content: center;
+           align-items: center;
            height: 100vh;
-           display: flex;
-           justify-content: center;
-           align-items: center;
+           margin: 0;
        }
-       .container {
-           width: 100%;
-           max-width: 420px;
-           height: 100%;
-           max-height: 750px;
-           background: #1a1c29;
-           border-radius: 16px;
-           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-           display: flex;
-           flex-direction: column;
-           overflow: hidden;
-           border: 1px solid #2d3148;
-       }
-       /* Giriş Ekranı */
-       #login-screen {
-           padding: 40px 24px;
-           display: flex;
-           flex-direction: column;
-           justify-content: center;
-           align-items: center;
-           height: 100%;
+       .box {
+           background: #161b22;
+           padding: 30px;
+           border-radius: 8px;
+           border: 1px solid #30363d;
            text-align: center;
-       }
-       .logo {
-           font-size: 28px;
-           font-weight: 700;
-           color: #38bdf8;
-           margin-bottom: 8px;
-           letter-spacing: 1px;
-       }
-       .subtitle {
-           font-size: 14px;
-           color: #94a3b8;
-           margin-bottom: 32px;
-       }
-       .input-group {
-           width: 100%;
-           margin-bottom: 16px;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+           width: 320px;
        }
        input {
            width: 100%;
-           padding: 14px 16px;
-           background: #0f111a;
-           border: 1px solid #2d3148;
-           border-radius: 8px;
+           padding: 10px;
+           margin: 10px 0;
+           background: #0d1117;
+           border: 1px solid #30363d;
            color: #fff;
-           font-size: 16px;
-           outline: none;
-           transition: border-color 0.2s;
+           border-radius: 4px;
+           box-sizing: border-box;
        }
-       input:focus {
-           border-color: #38bdf8;
-       }
-       .btn {
+       button {
            width: 100%;
-           padding: 14px;
-           background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+           padding: 10px;
+           background: #238636;
+           color: white;
            border: none;
-           border-radius: 8px;
-           color: #0f111a;
-           font-size: 16px;
-           font-weight: 700;
+           border-radius: 4px;
            cursor: pointer;
-           transition: opacity 0.2s;
+           font-weight: bold;
        }
-       .btn:hover {
-           opacity: 0.9;
+       button:hover {
+           background: #2ea043;
        }
-       .error-msg {
-           color: #ef4444;
-           font-size: 13px;
-           margin-top: 12px;
-           display: none;
-       }
-       /* Chat Ekranı */
-       #chat-screen {
-           display: none;
-           flex-direction: column;
-           height: 100%;
-       }
-       .chat-header {
-           padding: 16px 20px;
-           background: #141622;
-           border-bottom: 1px solid #2d3148;
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-       }
-       .chat-title {
-           font-size: 16px;
-           font-weight: 600;
-           color: #38bdf8;
-       }
-       .clear-btn {
-           background: transparent;
-           border: 1px solid #ef4444;
-           color: #ef4444;
-           padding: 6px 12px;
-           border-radius: 6px;
+       .error {
+           color: #f85149;
            font-size: 12px;
-           cursor: pointer;
-           transition: background 0.2s, color 0.2s;
+           margin-top: 5px;
        }
-       .clear-btn:hover {
-           background: #ef4444;
-           color: #fff;
+       .hidden {
+           display: none;
        }
-       .chat-messages {
-           flex: 1;
-           padding: 20px;
+       .chat-area {
+           text-align: left;
+           height: 200px;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           border-radius: 4px;
+           padding: 10px;
            overflow-y: auto;
-           display: flex;
-           flex-direction: column;
-           gap: 12px;
+           margin-bottom: 10px;
+           font-size: 13px;
        }
-       .message {
-           max-width: 75%;
-           padding: 10px 14px;
-           border-radius: 12px;
-           font-size: 14px;
-           line-height: 1.4;
-           word-wrap: break-word;
-       }
-       .message.user {
-           background: #38bdf8;
-           color: #0f111a;
-           align-self: flex-end;
-           border-bottom-right-radius: 2px;
-           font-weight: 500;
-       }
-       .message.other {
-           background: #2d3148;
-           color: #e2e8f0;
-           align-self: flex-start;
-           border-bottom-left-radius: 2px;
-       }
-       .chat-input-area {
-           padding: 16px 20px;
-           background: #141622;
-           border-top: 1px solid #2d3148;
-           display: flex;
-           gap: 10px;
-       }
-       .chat-input-area input {
-           flex: 1;
-       }
-       .send-btn {
-           padding: 0 20px;
-           background: #38bdf8;
-           border: none;
-           border-radius: 8px;
-           color: #0f111a;
-           font-weight: 600;
-           cursor: pointer;
-           transition: opacity 0.2s;
-       }
-       .send-btn:hover {
-           opacity: 0.9;
+       .msg {
+           margin-bottom: 6px;
+           word-break: break-all;
        }
 </style>
 </head>
 <body>
-<div class="container">
-<!-- Giriş Ekranı -->
-<div id="login-screen">
-<div class="logo">GÜVENLİ SOHBET</div>
-<div class="subtitle">Canlı İletişim Paneli</div>
-<div class="input-group">
-<input type="text" id="username-input" placeholder="Kullanıcı Adı (sys-v1 veya sys-v2)" onkeypress="checkLoginEnter(event)" style="margin-bottom: 12px;">
-<input type="password" id="access-code" placeholder="Erişim Şifresi" onkeypress="checkLoginEnter(event)">
+<!-- GİRİŞ EKRANI -->
+<div id="loginSection" class="box">
+<h2>🔒 Güvenli Alan</h2>
+<p style="font-size: 13px; color: #8b949e;">Devam etmek için giriş yapın</p>
+<input type="text" id="username" placeholder="Kullanıcı Adı">
+<input type="password" id="password" placeholder="Şifre">
+<button onclick="checkLogin()">Giriş Yap</button>
+<div id="errorMsg" class="error"></div>
 </div>
-<button class="btn" onclick="enterLounge()">BAĞLAN</button>
-<div id="error-message" class="error-msg">Hatalı Kullanıcı Adı veya Şifre!</div>
+<!-- SOHBET EKRANI -->
+<div id="chatSection" class="box hidden" style="width: 400px;">
+<h2 style="color: #58a6ff; font-size: 18px; margin-top: 0;">💬 Canlı Sohbet Odası</h2>
+<div id="chatMessages" class="chat-area">
+<div class="msg"><b>Sistem:</b> Bağlantı kuruluyor...</div>
 </div>
-<!-- Chat Ekranı -->
-<div id="chat-screen">
-<div class="chat-header">
-<div class="chat-title" id="room-title">Güvenli Kanal</div>
-<button class="clear-btn" onclick="clearChat()">Temizle</button>
+<input type="text" id="chatInput" placeholder="Mesajınızı yazın..." onkeydown="if(event.key==='Enter') sendMessage()">
+<button onclick="sendMessage()">Gönder</button>
+<button onclick="logout()" style="background: #da3633; margin-top: 10px;">Çıkış Yap</button>
 </div>
-<div class="chat-messages" id="message-container">
-<!-- Mesajlar buraya gelecek -->
-</div>
-<div class="chat-input-area">
-<input type="text" id="message-input" placeholder="Mesaj yaz..." onkeypress="checkChatEnter(event)">
-<button class="send-btn" onclick="sendMessage()">Gönder</button>
-</div>
-</div>
-</div>
-<script>
-       const VALID_USERS = {
-           "sys-v1": "1asdfg22",
-           "sys-v2": "1asdfg22"
+<!-- FIREBASE BAĞLANTISI VE MANTIK -->
+<script type="module">
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+       import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+       const firebaseConfig = {
+           apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
+           authDomain: "sys-v1.firebaseapp.com",
+           projectId: "sys-v1",
+           storageBucket: "sys-v1.firebasestorage.app",
+           messagingSenderId: "387697999264",
+           appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
        };
-       let currentUsername = "";
-       const channel = new BroadcastChannel('secure_chat_channel');
-       function enterLounge() {
-           const userInput = document.getElementById('username-input');
-           const codeInput = document.getElementById('access-code');
-           const errorMsg = document.getElementById('error-message');
-           const enteredUser = userInput.value.trim().toLowerCase();
-           const enteredCode = codeInput.value.trim();
-           if (VALID_USERS[enteredUser] && VALID_USERS[enteredUser] === enteredCode) {
-               currentUsername = enteredUser;
-               errorMsg.style.display = 'none';
-               document.getElementById('login-screen').style.display = 'none';
-               document.getElementById('chat-screen').style.display = 'flex';
-               document.getElementById('room-title').textContent = `Kanal: ${currentUsername.toUpperCase()}`;
+       const app = initializeApp(firebaseConfig);
+       const db = getFirestore(app);
+       let activeUser = "";
+       window.checkLogin = function() {
+           var user = document.getElementById("username").value.trim();
+           var pass = document.getElementById("password").value.trim();
+           // sys-v1 veya sys-v2 kullanıcıları için şifre kontrolü
+           if ((user === "sys-v1" || user === "sys-v2") && pass === "1asdfg22") {
+               activeUser = user;
+               document.getElementById("loginSection").classList.add("hidden");
+               document.getElementById("chatSection").classList.remove("hidden");
                loadMessages();
            } else {
-               errorMsg.style.display = 'block';
-               userInput.value = '';
-               codeInput.value = '';
-               userInput.focus();
+               document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
            }
        }
-       function checkLoginEnter(e) {
-           if (e.key === 'Enter') {
-               enterLounge();
+       window.sendMessage = async function() {
+           var input = document.getElementById("chatInput");
+           if (input.value.trim() !== "") {
+               try {
+                   await addDoc(collection(db, "messages"), {
+                       user: activeUser,
+                       text: input.value,
+                       time: serverTimestamp()
+                   });
+                   input.value = "";
+               } catch (e) {
+                   console.error("Mesaj gönderilemedi: ", e);
+               }
            }
        }
        function loadMessages() {
-           const container = document.getElementById('message-container');
-           container.innerHTML = '';
-           let messages = JSON.parse(localStorage.getItem('secure_chat_messages') || '[]');
-           messages.forEach(msg => {
-               appendMessageUI(msg.sender, msg.text);
+           const q = query(collection(db, "messages"), orderBy("time", "asc"));
+           onSnapshot(q, (snapshot) => {
+               let messagesDiv = document.getElementById("chatMessages");
+               messagesDiv.innerHTML = "";
+               snapshot.forEach((doc) => {
+                   let data = doc.data();
+                   messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
+               });
+               messagesDiv.scrollTop = messagesDiv.scrollHeight;
            });
        }
-       function appendMessageUI(sender, text) {
-           const container = document.getElementById('message-container');
-           const msgDiv = document.createElement('div');
-           msgDiv.className = 'message ' + (sender === currentUsername ? 'user' : 'other');
-           msgDiv.textContent = text;
-           container.appendChild(msgDiv);
-           container.scrollTop = container.scrollHeight;
-       }
-       function sendMessage() {
-           const input = document.getElementById('message-input');
-           const text = input.value.trim();
-           if (!text || !currentUsername) return;
-           const msgData = { sender: currentUsername, text: text, timestamp: Date.now() };
-           let messages = JSON.parse(localStorage.getItem('secure_chat_messages') || '[]');
-           messages.push(msgData);
-           localStorage.setItem('secure_chat_messages', JSON.stringify(messages));
-           appendMessageUI(currentUsername, text);
-           channel.postMessage(msgData);
-           input.value = '';
-       }
-       channel.onmessage = function (event) {
-           if (event.data.clear) {
-               document.getElementById('message-container').innerHTML = '';
-               localStorage.removeItem('secure_chat_messages');
-           } else {
-               const msg = event.data;
-               if (msg.sender !== currentUsername) {
-                   appendMessageUI(msg.sender, msg.text);
-               }
-           }
-       };
-       function checkChatEnter(e) {
-           if (e.key === 'Enter') {
-               sendMessage();
-           }
-       }
-       function clearChat() {
-           if (confirm("Sohbet geçmişini temizlemek istediğine emin misin?")) {
-               localStorage.removeItem('secure_chat_messages');
-               document.getElementById('message-container').innerHTML = '';
-               channel.postMessage({ clear: true });
-           }
+       window.logout = function() {
+           document.getElementById("username").value = "";
+           document.getElementById("password").value = "";
+           document.getElementById("errorMsg").innerText = "";
+           document.getElementById("chatSection").classList.add("hidden");
+           document.getElementById("loginSection").classList.remove("hidden");
        }
 </script>
 </body>
