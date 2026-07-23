@@ -177,7 +177,7 @@
 </head>
 <body>
 <div class="container">
-<!-- Giriş Ekranı (Casino Temalı) -->
+<!-- Giriş Ekranı -->
 <div id="login-screen">
 <div class="casino-logo">VIP CASINO</div>
 <div class="casino-subtitle">Özel Masa Girişi</div>
@@ -203,28 +203,14 @@
 </div>
 </div>
 </div>
-<!-- Firebase Modüler SDK CDN -->
-<script type="module">
-       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-       import { getDatabase, ref, push, remove, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-       // BURAYA KENDİ FIREBASE BİLGİLERİNİ YAPIŞTIRACAKSIN
-       const firebaseConfig = {
-           apiKey: "SENIN_API_KEY",
-           authDomain: "SENIN_PROJE.firebaseapp.com",
-           databaseURL: "https://SENIN_PROJE-default-rtdb.firebaseio.com",
-           projectId: "SENIN_PROJE",
-           storageBucket: "SENIN_PROJE.appspot.com",
-           messagingSenderId: "SENIN_ID",
-           appId: "SENIN_APP_ID"
-       };
-       const app = initializeApp(firebaseConfig);
-       const db = getDatabase(app);
+<script>
        const VALID_USERS = {
            "sys-v1": "1asdfg22",
            "sys-v2": "1asdfg22"
        };
        let currentUsername = "";
-       window.enterLounge = function() {
+       const channel = new BroadcastChannel('vip_lounge_channel');
+       function enterLounge() {
            const userInput = document.getElementById('username-input');
            const codeInput = document.getElementById('access-code');
            const errorMsg = document.getElementById('error-message');
@@ -235,59 +221,79 @@
                errorMsg.style.display = 'none';
                document.getElementById('login-screen').style.display = 'none';
                document.getElementById('chat-screen').style.display = 'flex';
-               listenMessages();
+               loadMessages();
            } else {
                errorMsg.style.display = 'block';
                userInput.value = '';
                codeInput.value = '';
                userInput.focus();
            }
-       };
-       window.checkLoginEnter = function(e) {
+       }
+       function checkLoginEnter(e) {
            if (e.key === 'Enter') {
-               window.enterLounge();
+               enterLounge();
            }
-       };
-       function listenMessages() {
+       }
+       function loadMessages() {
            const container = document.getElementById('message-container');
-           const messagesRef = ref(db, 'vip_messages');
-           onValue(messagesRef, (snapshot) => {
-               container.innerHTML = '';
-               const data = snapshot.val();
-               if (data) {
-                   Object.keys(data).forEach((key) => {
-                       const msg = data[key];
-                       const msgDiv = document.createElement('div');
-                       msgDiv.className = 'message ' + (msg.sender === currentUsername ? 'user' : 'other');
-                       msgDiv.textContent = msg.text;
-                       container.appendChild(msgDiv);
-                   });
-                   container.scrollTop = container.scrollHeight;
-               }
+           container.innerHTML = '';
+           let messages = JSON.parse(localStorage.getItem('vip_messages') || '[]');
+           messages.forEach(msg => {
+               appendMessageUI(msg.sender, msg.text);
            });
        }
-       window.sendMessage = function() {
+       function appendMessageUI(sender, text) {
+           const container = document.getElementById('message-container');
+           const msgDiv = document.createElement('div');
+           msgDiv.className = 'message ' + (sender === currentUsername ? 'user' : 'other');
+           msgDiv.textContent = text;
+           container.appendChild(msgDiv);
+           container.scrollTop = container.scrollHeight;
+       }
+       function sendMessage() {
            const input = document.getElementById('message-input');
            const text = input.value.trim();
            if (!text || !currentUsername) return;
-           const messagesRef = ref(db, 'vip_messages');
-           push(messagesRef, {
-               sender: currentUsername,
-               text: text,
-               timestamp: Date.now()
-           });
+           const msgData = { sender: currentUsername, text: text, timestamp: Date.now() };
+           // Kaydet
+           let messages = JSON.parse(localStorage.getItem('vip_messages') || '[]');
+           messages.push(msgData);
+           localStorage.setItem('vip_messages', JSON.stringify(messages));
+           // Arayüze ekle (Kendi ekranına anında gelsin)
+           appendMessageUI(currentUsername, text);
+           // Diğer sekmelere bildir
+           channel.postMessage(msgData);
            input.value = '';
-       };
-       window.checkChatEnter = function(e) {
-           if (e.key === 'Enter') {
-               window.sendMessage();
+       }
+       // Diğer sekmelerden gelen mesajları dinle
+       channel.onmessage = function (event) {
+           const msg = event.data;
+           if (msg.sender !== currentUsername) {
+               appendMessageUI(msg.sender, msg.text);
            }
        };
-       window.clearChat = function() {
+       function checkChatEnter(e) {
+           if (e.key === 'Enter') {
+               sendMessage();
+           }
+       }
+       function clearChat() {
            if (confirm("Sohbeti temizlemek istediğine emin misin?")) {
-               const messagesRef = ref(db, 'vip_messages');
-               remove(messagesRef);
+               localStorage.removeItem('vip_messages');
                document.getElementById('message-container').innerHTML = '';
+               channel.postMessage({ clear: true });
+           }
+       }
+       // Temizleme sinyalini dinle
+       channel.onmessage = function (event) {
+           if (event.data.clear) {
+               document.getElementById('message-container').innerHTML = '';
+               localStorage.removeItem('vip_messages');
+           } else {
+               const msg = event.data;
+               if (msg.sender !== currentUsername) {
+                   appendMessageUI(msg.sender, msg.text);
+               }
            }
        };
 </script>
