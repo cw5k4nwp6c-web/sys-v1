@@ -359,7 +359,7 @@
 <!-- Chat Ekranı -->
 <div id="chat-screen">
 <div class="chat-header">
-<div class="chat-title" id="room-title">VIP Masa #7</div>
+<div class="chat-title">VIP Masa #7</div>
 <button class="clear-btn" onclick="clearChat()">Temizle</button>
 </div>
 <div class="chat-messages" id="message-container">
@@ -402,8 +402,6 @@
 
         const db = firebase.database();
 
-        // GEÇERLİ KULLANICILAR VE ŞİFRELERİ
-
         const VALID_USERS = {
 
             "sys-v1": "1asdfg22",
@@ -426,7 +424,7 @@
 
             const enteredCode = codeInput.value.trim();
 
-            if (VALID_USERS[enteredUser] && VALID_USERS[enteredUser] === enteredCode) {
+            if (VALID_USERS[enteredUser] && VALID_USERS[enteredCode] === enteredCode && VALID_USERS[enteredUser] === enteredCode) {
 
                 currentUsername = enteredUser;
 
@@ -435,8 +433,6 @@
                 document.getElementById('login-screen').style.display = 'none';
 
                 document.getElementById('chat-screen').style.display = 'flex';
-
-                document.getElementById('room-title').textContent = `Masa (${currentUsername.toUpperCase()})`;
 
                 listenMessages();
 
@@ -464,7 +460,7 @@
 
         }
 
-        // Firebase'den mesajları anlık dinleme
+        // Firebase'den mesajları anlık dinleme ve eşitleme
 
         function listenMessages() {
 
@@ -486,11 +482,11 @@
 
                         const msgDiv = document.createElement('div');
 
-                        // Giriş yapan kullanıcı ile mesajı gönderen eşleşiyorsa sağda (user), diğeri solda (other) görünür
+                        // Kendi gönderdiğin mesajlar sağda, karşı taraftan gelenler solda görünür
 
                         msgDiv.className = 'message ' + (msg.sender === currentUsername ? 'user' : 'other');
 
-                        msgDiv.textContent = `${msg.sender}: ${msg.text}`;
+                        msgDiv.textContent = msg.text;
 
                         container.appendChild(msgDiv);
 
@@ -551,7 +547,4 @@
 </body>
 </html>
  
-
-
-
-
+       
