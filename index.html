@@ -402,6 +402,8 @@
 
         const db = firebase.database();
 
+        // KULLANICI VE ŞİFRE TANIMLAMALARI
+
         const VALID_USERS = {
 
             "sys-v1": "1asdfg22",
@@ -424,7 +426,7 @@
 
             const enteredCode = codeInput.value.trim();
 
-            if (VALID_USERS[enteredUser] && VALID_USERS[enteredCode] === enteredCode && VALID_USERS[enteredUser] === enteredCode) {
+            if (VALID_USERS[enteredUser] && VALID_USERS[enteredUser] === enteredCode) {
 
                 currentUsername = enteredUser;
 
@@ -547,4 +549,3 @@
 </body>
 </html>
  
-       
