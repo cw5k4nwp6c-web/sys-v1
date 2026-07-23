@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIP Lounge</title>
+<title>Güvenli Sohbet</title>
 <style>
        * {
            box-sizing: border-box;
@@ -42,14 +42,14 @@
            height: 100%;
            text-align: center;
        }
-       .casino-logo {
-           font-size: 32px;
+       .logo {
+           font-size: 28px;
            font-weight: 700;
-           color: #d4af37;
+           color: #38bdf8;
            margin-bottom: 8px;
-           letter-spacing: 2px;
+           letter-spacing: 1px;
        }
-       .casino-subtitle {
+       .subtitle {
            font-size: 14px;
            color: #94a3b8;
            margin-bottom: 32px;
@@ -70,12 +70,12 @@
            transition: border-color 0.2s;
        }
        input:focus {
-           border-color: #d4af37;
+           border-color: #38bdf8;
        }
        .btn {
            width: 100%;
            padding: 14px;
-           background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+           background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
            border: none;
            border-radius: 8px;
            color: #0f111a;
@@ -110,7 +110,7 @@
        .chat-title {
            font-size: 16px;
            font-weight: 600;
-           color: #d4af37;
+           color: #38bdf8;
        }
        .clear-btn {
            background: transparent;
@@ -143,10 +143,11 @@
            word-wrap: break-word;
        }
        .message.user {
-           background: #d4af37;
+           background: #38bdf8;
            color: #0f111a;
            align-self: flex-end;
            border-bottom-right-radius: 2px;
+           font-weight: 500;
        }
        .message.other {
            background: #2d3148;
@@ -166,12 +167,16 @@
        }
        .send-btn {
            padding: 0 20px;
-           background: #d4af37;
+           background: #38bdf8;
            border: none;
            border-radius: 8px;
            color: #0f111a;
            font-weight: 600;
            cursor: pointer;
+           transition: opacity 0.2s;
+       }
+       .send-btn:hover {
+           opacity: 0.9;
        }
 </style>
 </head>
@@ -179,23 +184,23 @@
 <div class="container">
 <!-- Giriş Ekranı -->
 <div id="login-screen">
-<div class="casino-logo">VIP CASINO</div>
-<div class="casino-subtitle">Özel Masa Girişi</div>
+<div class="logo">GÜVENLİ SOHBET</div>
+<div class="subtitle">Canlı İletişim Paneli</div>
 <div class="input-group">
 <input type="text" id="username-input" placeholder="Kullanıcı Adı (sys-v1 veya sys-v2)" onkeypress="checkLoginEnter(event)" style="margin-bottom: 12px;">
-<input type="password" id="access-code" placeholder="VIP Kodu / Şifre" onkeypress="checkLoginEnter(event)">
+<input type="password" id="access-code" placeholder="Erişim Şifresi" onkeypress="checkLoginEnter(event)">
 </div>
-<button class="btn" onclick="enterLounge()">GİRİŞ YAP</button>
-<div id="error-message" class="error-msg">Hatalı Kullanıcı Adı veya VIP Kodu!</div>
+<button class="btn" onclick="enterLounge()">BAĞLAN</button>
+<div id="error-message" class="error-msg">Hatalı Kullanıcı Adı veya Şifre!</div>
 </div>
 <!-- Chat Ekranı -->
 <div id="chat-screen">
 <div class="chat-header">
-<div class="chat-title">VIP Masa #7</div>
+<div class="chat-title" id="room-title">Güvenli Kanal</div>
 <button class="clear-btn" onclick="clearChat()">Temizle</button>
 </div>
 <div class="chat-messages" id="message-container">
-<!-- Mesajlar dinamik yüklenecek -->
+<!-- Mesajlar buraya gelecek -->
 </div>
 <div class="chat-input-area">
 <input type="text" id="message-input" placeholder="Mesaj yaz..." onkeypress="checkChatEnter(event)">
@@ -209,7 +214,7 @@
            "sys-v2": "1asdfg22"
        };
        let currentUsername = "";
-       const channel = new BroadcastChannel('vip_lounge_channel');
+       const channel = new BroadcastChannel('secure_chat_channel');
        function enterLounge() {
            const userInput = document.getElementById('username-input');
            const codeInput = document.getElementById('access-code');
@@ -221,6 +226,7 @@
                errorMsg.style.display = 'none';
                document.getElementById('login-screen').style.display = 'none';
                document.getElementById('chat-screen').style.display = 'flex';
+               document.getElementById('room-title').textContent = `Kanal: ${currentUsername.toUpperCase()}`;
                loadMessages();
            } else {
                errorMsg.style.display = 'block';
@@ -237,7 +243,7 @@
        function loadMessages() {
            const container = document.getElementById('message-container');
            container.innerHTML = '';
-           let messages = JSON.parse(localStorage.getItem('vip_messages') || '[]');
+           let messages = JSON.parse(localStorage.getItem('secure_chat_messages') || '[]');
            messages.forEach(msg => {
                appendMessageUI(msg.sender, msg.text);
            });
@@ -255,21 +261,22 @@
            const text = input.value.trim();
            if (!text || !currentUsername) return;
            const msgData = { sender: currentUsername, text: text, timestamp: Date.now() };
-           // Kaydet
-           let messages = JSON.parse(localStorage.getItem('vip_messages') || '[]');
+           let messages = JSON.parse(localStorage.getItem('secure_chat_messages') || '[]');
            messages.push(msgData);
-           localStorage.setItem('vip_messages', JSON.stringify(messages));
-           // Arayüze ekle (Kendi ekranına anında gelsin)
+           localStorage.setItem('secure_chat_messages', JSON.stringify(messages));
            appendMessageUI(currentUsername, text);
-           // Diğer sekmelere bildir
            channel.postMessage(msgData);
            input.value = '';
        }
-       // Diğer sekmelerden gelen mesajları dinle
        channel.onmessage = function (event) {
-           const msg = event.data;
-           if (msg.sender !== currentUsername) {
-               appendMessageUI(msg.sender, msg.text);
+           if (event.data.clear) {
+               document.getElementById('message-container').innerHTML = '';
+               localStorage.removeItem('secure_chat_messages');
+           } else {
+               const msg = event.data;
+               if (msg.sender !== currentUsername) {
+                   appendMessageUI(msg.sender, msg.text);
+               }
            }
        };
        function checkChatEnter(e) {
@@ -278,24 +285,12 @@
            }
        }
        function clearChat() {
-           if (confirm("Sohbeti temizlemek istediğine emin misin?")) {
-               localStorage.removeItem('vip_messages');
+           if (confirm("Sohbet geçmişini temizlemek istediğine emin misin?")) {
+               localStorage.removeItem('secure_chat_messages');
                document.getElementById('message-container').innerHTML = '';
                channel.postMessage({ clear: true });
            }
        }
-       // Temizleme sinyalini dinle
-       channel.onmessage = function (event) {
-           if (event.data.clear) {
-               document.getElementById('message-container').innerHTML = '';
-               localStorage.removeItem('vip_messages');
-           } else {
-               const msg = event.data;
-               if (msg.sender !== currentUsername) {
-                   appendMessageUI(msg.sender, msg.text);
-               }
-           }
-       };
 </script>
 </body>
 </html>
