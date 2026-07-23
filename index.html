@@ -4,136 +4,71 @@
 <meta charset="UTF-8">
 <title>Güvenli Sohbet Odası</title>
 <style>
-
-        body {
-
-            background-color: #0d1117;
-
-            color: #c9d1d9;
-
-            font-family: monospace;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            height: 100vh;
-
-            margin: 0;
-
-        }
-
-        .box {
-
-            background: #161b22;
-
-            padding: 30px;
-
-            border-radius: 8px;
-
-            border: 1px solid #30363d;
-
-            text-align: center;
-
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-
-            width: 320px;
-
-        }
-
-        input {
-
-            width: 100%;
-
-            padding: 10px;
-
-            margin: 10px 0;
-
-            background: #0d1117;
-
-            border: 1px solid #30363d;
-
-            color: #fff;
-
-            border-radius: 4px;
-
-            box-sizing: border-box;
-
-        }
-
-        button {
-
-            width: 100%;
-
-            padding: 10px;
-
-            background: #238636;
-
-            color: white;
-
-            border: none;
-
-            border-radius: 4px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
-        }
-
-        button:hover {
-
-            background: #2ea043;
-
-        }
-
-        .error {
-
-            color: #f85149;
-
-            font-size: 12px;
-
-            margin-top: 5px;
-
-        }
-
-        .hidden {
-
-            display: none;
-
-        }
-
-        .chat-area {
-
-            text-align: left;
-
-            height: 200px;
-
-            background: #0d1117;
-
-            border: 1px solid #30363d;
-
-            border-radius: 4px;
-
-            padding: 10px;
-
-            overflow-y: auto;
-
-            margin-bottom: 10px;
-
-            font-size: 13px;
-
-        }
-
-        .msg {
-
-            margin-bottom: 6px;
-
-            word-break: break-all;
-
-        }
+       body {
+           background-color: #0d1117;
+           color: #c9d1d9;
+           font-family: monospace;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
+       .box {
+           background: #161b22;
+           padding: 30px;
+           border-radius: 8px;
+           border: 1px solid #30363d;
+           text-align: center;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+           width: 320px;
+       }
+       input {
+           width: 100%;
+           padding: 10px;
+           margin: 10px 0;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           color: #fff;
+           border-radius: 4px;
+           box-sizing: border-box;
+       }
+       button {
+           width: 100%;
+           padding: 10px;
+           background: #238636;
+           color: white;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+           font-weight: bold;
+       }
+       button:hover {
+           background: #2ea043;
+       }
+       .error {
+           color: #f85149;
+           font-size: 12px;
+           margin-top: 5px;
+       }
+       .hidden {
+           display: none;
+       }
+       .chat-area {
+           text-align: left;
+           height: 200px;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           border-radius: 4px;
+           padding: 10px;
+           overflow-y: auto;
+           margin-bottom: 10px;
+           font-size: 13px;
+       }
+       .msg {
+           margin-bottom: 6px;
+           word-break: break-all;
+       }
 </style>
 </head>
 <body>
@@ -158,266 +93,142 @@
 </div>
 <!-- FIREBASE BAĞLANTISI VE MANTIK -->
 <script type="module">
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-
-            apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
-
-            authDomain: "sys-v1.firebaseapp.com",
-
-            projectId: "sys-v1",
-
-            storageBucket: "sys-v1.firebasestorage.app",
-
-            messagingSenderId: "387697999264",
-
-            appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
-
-        };
-
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
-
-        let activeUser = "";
-
-        window.checkLogin = function() {
-
-            var user = document.getElementById("username").value.trim();
-
-            var pass = document.getElementById("password").value.trim();
-
-            // Kullanıcı adı ve şifreni buraya yazabilirsin (Şu an: admin / 1234)
-
-            if (user === "admin" && pass === "1234") {
-
-                activeUser = user;
-
-                document.getElementById("loginSection").classList.add("hidden");
-
-                document.getElementById("chatSection").classList.remove("hidden");
-
-                loadMessages();
-
-            } else {
-
-                document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
-
-            }
-
-        }
-
-        window.sendMessage = async function() {
-
-            var input = document.getElementById("chatInput");
-
-            if (input.value.trim() !== "") {
-
-                try {
-
-                    await addDoc(collection(db, "messages"), {
-
-                        user: activeUser,
-
-                        text: input.value,
-
-                        time: serverTimestamp()
-
-                    });
-
-                    input.value = "";
-
-                } catch (e) {
-
-                    console.error("Mesaj gönderilemedi: ", e);
-
-                }
-
-            }
-
-        }
-
-        function loadMessages() {
-
-            const q = query(collection(db, "messages"), orderBy("time", "asc"));
-
-            onSnapshot(q, (snapshot) => {
-
-                let messagesDiv = document.getElementById("chatMessages");
-
-                messagesDiv.innerHTML = "";
-
-                snapshot.forEach((doc) => {
-
-                    let data = doc.data();
-
-                    messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
-
-                });
-
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            });
-
-        }
-
-        window.logout = function() {
-
-            document.getElementById("username").value = "";
-
-            document.getElementById("password").value = "";
-
-            document.getElementById("errorMsg").innerText = "";
-
-            document.getElementById("chatSection").classList.add("hidden");
-
-            document.getElementById("loginSection").classList.remove("hidden");
-
-        }
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+       import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+       const firebaseConfig = {
+           apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
+           authDomain: "sys-v1.firebaseapp.com",
+           projectId: "sys-v1",
+           storageBucket: "sys-v1.firebasestorage.app",
+           messagingSenderId: "387697999264",
+           appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
+       };
+       const app = initializeApp(firebaseConfig);
+       const db = getFirestore(app);
+       let activeUser = "";
+       window.checkLogin = function() {
+           var user = document.getElementById("username").value.trim();
+           var pass = document.getElementById("password").value.trim();
+           // Kullanıcı adı ve şifreni buraya yazabilirsin (Şu an: admin / 1234)
+           if (user === "admin" && pass === "1234") {
+               activeUser = user;
+               document.getElementById("loginSection").classList.add("hidden");
+               document.getElementById("chatSection").classList.remove("hidden");
+               loadMessages();
+           } else {
+               document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
+           }
+       }
+       window.sendMessage = async function() {
+           var input = document.getElementById("chatInput");
+           if (input.value.trim() !== "") {
+               try {
+                   await addDoc(collection(db, "messages"), {
+                       user: activeUser,
+                       text: input.value,
+                       time: serverTimestamp()
+                   });
+                   input.value = "";
+               } catch (e) {
+                   console.error("Mesaj gönderilemedi: ", e);
+               }
+           }
+       }
+       function loadMessages() {
+           const q = query(collection(db, "messages"), orderBy("time", "asc"));
+           onSnapshot(q, (snapshot) => {
+               let messagesDiv = document.getElementById("chatMessages");
+               messagesDiv.innerHTML = "";
+               snapshot.forEach((doc) => {
+                   let data = doc.data();
+                   messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
+               });
+               messagesDiv.scrollTop = messagesDiv.scrollHeight;
+           });
+       }
+       window.logout = function() {
+           document.getElementById("username").value = "";
+           document.getElementById("password").value = "";
+           document.getElementById("errorMsg").innerText = "";
+           document.getElementById("chatSection").classList.add("hidden");
+           document.getElementById("loginSection").classList.remove("hidden");
+       }
 </script>
 </body>
 </html>
- 
+Hüseyin Efe kullanıcısından <!DOCTYPE html> <html lang="tr"> <head> <me...
+Hüseyin Efe
 <!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
 <title>Güvenli Sohbet Odası</title>
 <style>
-
-        body {
-
-            background-color: #0d1117;
-
-            color: #c9d1d9;
-
-            font-family: monospace;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            height: 100vh;
-
-            margin: 0;
-
-        }
-
-        .box {
-
-            background: #161b22;
-
-            padding: 30px;
-
-            border-radius: 8px;
-
-            border: 1px solid #30363d;
-
-            text-align: center;
-
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-
-            width: 320px;
-
-        }
-
-        input {
-
-            width: 100%;
-
-            padding: 10px;
-
-            margin: 10px 0;
-
-            background: #0d1117;
-
-            border: 1px solid #30363d;
-
-            color: #fff;
-
-            border-radius: 4px;
-
-            box-sizing: border-box;
-
-        }
-
-        button {
-
-            width: 100%;
-
-            padding: 10px;
-
-            background: #238636;
-
-            color: white;
-
-            border: none;
-
-            border-radius: 4px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
-        }
-
-        button:hover {
-
-            background: #2ea043;
-
-        }
-
-        .error {
-
-            color: #f85149;
-
-            font-size: 12px;
-
-            margin-top: 5px;
-
-        }
-
-        .hidden {
-
-            display: none;
-
-        }
-
-        .chat-area {
-
-            text-align: left;
-
-            height: 200px;
-
-            background: #0d1117;
-
-            border: 1px solid #30363d;
-
-            border-radius: 4px;
-
-            padding: 10px;
-
-            overflow-y: auto;
-
-            margin-bottom: 10px;
-
-            font-size: 13px;
-
-        }
-
-        .msg {
-
-            margin-bottom: 6px;
-
-            word-break: break-all;
-
-        }
+       body {
+           background-color: #0d1117;
+           color: #c9d1d9;
+           font-family: monospace;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
+       .box {
+           background: #161b22;
+           padding: 30px;
+           border-radius: 8px;
+           border: 1px solid #30363d;
+           text-align: center;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+           width: 320px;
+       }
+       input {
+           width: 100%;
+           padding: 10px;
+           margin: 10px 0;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           color: #fff;
+           border-radius: 4px;
+           box-sizing: border-box;
+       }
+       button {
+           width: 100%;
+           padding: 10px;
+           background: #238636;
+           color: white;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+           font-weight: bold;
+       }
+       button:hover {
+           background: #2ea043;
+       }
+       .error {
+           color: #f85149;
+           font-size: 12px;
+           margin-top: 5px;
+       }
+       .hidden {
+           display: none;
+       }
+       .chat-area {
+           text-align: left;
+           height: 200px;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           border-radius: 4px;
+           padding: 10px;
+           overflow-y: auto;
+           margin-bottom: 10px;
+           font-size: 13px;
+       }
+       .msg {
+           margin-bottom: 6px;
+           word-break: break-all;
+       }
 </style>
 </head>
 <body>
@@ -442,126 +253,66 @@
 </div>
 <!-- FIREBASE BAĞLANTISI VE MANTIK -->
 <script type="module">
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-
-            apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
-
-            authDomain: "sys-v1.firebaseapp.com",
-
-            projectId: "sys-v1",
-
-            storageBucket: "sys-v1.firebasestorage.app",
-
-            messagingSenderId: "387697999264",
-
-            appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
-
-        };
-
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
-
-        let activeUser = "";
-
-        window.checkLogin = function() {
-
-            var user = document.getElementById("username").value.trim();
-
-            var pass = document.getElementById("password").value.trim();
-
-            // sys-v1 veya sys-v2 kullanıcıları için şifre kontrolü
-
-            if ((user === "sys-v1" || user === "sys-v2") && pass === "1asdfg22") {
-
-                activeUser = user;
-
-                document.getElementById("loginSection").classList.add("hidden");
-
-                document.getElementById("chatSection").classList.remove("hidden");
-
-                loadMessages();
-
-            } else {
-
-                document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
-
-            }
-
-        }
-
-        window.sendMessage = async function() {
-
-            var input = document.getElementById("chatInput");
-
-            if (input.value.trim() !== "") {
-
-                try {
-
-                    await addDoc(collection(db, "messages"), {
-
-                        user: activeUser,
-
-                        text: input.value,
-
-                        time: serverTimestamp()
-
-                    });
-
-                    input.value = "";
-
-                } catch (e) {
-
-                    console.error("Mesaj gönderilemedi: ", e);
-
-                }
-
-            }
-
-        }
-
-        function loadMessages() {
-
-            const q = query(collection(db, "messages"), orderBy("time", "asc"));
-
-            onSnapshot(q, (snapshot) => {
-
-                let messagesDiv = document.getElementById("chatMessages");
-
-                messagesDiv.innerHTML = "";
-
-                snapshot.forEach((doc) => {
-
-                    let data = doc.data();
-
-                    messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
-
-                });
-
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            });
-
-        }
-
-        window.logout = function() {
-
-            document.getElementById("username").value = "";
-
-            document.getElementById("password").value = "";
-
-            document.getElementById("errorMsg").innerText = "";
-
-            document.getElementById("chatSection").classList.add("hidden");
-
-            document.getElementById("loginSection").classList.remove("hidden");
-
-        }
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+       import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+       const firebaseConfig = {
+           apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
+           authDomain: "sys-v1.firebaseapp.com",
+           projectId: "sys-v1",
+           storageBucket: "sys-v1.firebasestorage.app",
+           messagingSenderId: "387697999264",
+           appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
+       };
+       const app = initializeApp(firebaseConfig);
+       const db = getFirestore(app);
+       let activeUser = "";
+       window.checkLogin = function() {
+           var user = document.getElementById("username").value.trim();
+           var pass = document.getElementById("password").value.trim();
+           // sys-v1 veya sys-v2 kullanıcıları için şifre kontrolü
+           if ((user === "sys-v1" || user === "sys-v2") && pass === "1asdfg22") {
+               activeUser = user;
+               document.getElementById("loginSection").classList.add("hidden");
+               document.getElementById("chatSection").classList.remove("hidden");
+               loadMessages();
+           } else {
+               document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
+           }
+       }
+       window.sendMessage = async function() {
+           var input = document.getElementById("chatInput");
+           if (input.value.trim() !== "") {
+               try {
+                   await addDoc(collection(db, "messages"), {
+                       user: activeUser,
+                       text: input.value,
+                       time: serverTimestamp()
+                   });
+                   input.value = "";
+               } catch (e) {
+                   console.error("Mesaj gönderilemedi: ", e);
+               }
+           }
+       }
+       function loadMessages() {
+           const q = query(collection(db, "messages"), orderBy("time", "asc"));
+           onSnapshot(q, (snapshot) => {
+               let messagesDiv = document.getElementById("chatMessages");
+               messagesDiv.innerHTML = "";
+               snapshot.forEach((doc) => {
+                   let data = doc.data();
+                   messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
+               });
+               messagesDiv.scrollTop = messagesDiv.scrollHeight;
+           });
+       }
+       window.logout = function() {
+           document.getElementById("username").value = "";
+           document.getElementById("password").value = "";
+           document.getElementById("errorMsg").innerText = "";
+           document.getElementById("chatSection").classList.add("hidden");
+           document.getElementById("loginSection").classList.remove("hidden");
+       }
 </script>
 </body>
 </html>
