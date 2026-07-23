@@ -202,8 +202,9 @@
 </div>
 </div>
 </div>
+<!-- Supabase Kütüphanesi (İki cihaz arası anlık veri alışverişi için) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-       // VIP Şifresi güncellendi
        const CORRECT_VIP_CODE = "1asdfg22";
        function enterLounge() {
            const codeInput = document.getElementById('access-code');
@@ -230,6 +231,8 @@
            const saved = localStorage.getItem('vip_chat_messages');
            if (saved) {
                container.innerHTML = saved;
+           } else {
+               container.innerHTML = '<div class="message other">Masa aktif, sohbete başlayabilirsiniz.</div>';
            }
            container.scrollTop = container.scrollHeight;
        }
@@ -260,7 +263,6 @@
 </script>
 </body>
 </html>
-
 
 
 
