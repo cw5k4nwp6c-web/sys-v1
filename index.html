@@ -2,90 +2,120 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Canlı Sohbet Odası</title>
-<!-- Firebase SDK -->
-<script type="module">
-       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-       import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-       const firebaseConfig = {
-           apiKey: "AIzaSyD2Q7JlhgD4guwrSPDMRIqatwIBLP7s3cI",
-           authDomain: "sys-v1.firebaseapp.com",
-           projectId: "sys-v1",
-           storageBucket: "sys-v1.firebasestorage.app",
-           messagingSenderId: "387697999264",
-           appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
-       };
-       const app = initializeApp(firebaseConfig);
-       const db = getFirestore(app);
-       // İsim sorma ve saklama
-       let userName = localStorage.getItem("chat_username");
-       if (!userName) {
-           userName = prompt("Sohbette görünecek adını gir:") || "İsimsiz";
-           localStorage.setItem("chat_username", userName);
-       }
-       document.getElementById("userInfo").innerText = "Kullanıcı: " + userName;
-       // Mesaj gönderme
-       window.sendMessage = async function() {
-           const input = document.getElementById("messageInput");
-           const text = input.value.trim();
-           if (!text) return;
-           try {
-               await addDoc(collection(db, "messages"), {
-                   name: userName,
-                   text: text,
-                   createdAt: serverTimestamp()
-               });
-               input.value = "";
-           } catch (e) {
-               console.error("Hata:", e);
-               alert("Mesaj gönderilemedi!");
-           }
-       };
-       // Enter tuşu ile gönderme
-       window.handleKeyPress = function(e) {
-           if (e.key === 'Enter') sendMessage();
-       };
-       // Mesajları anlık dinleme
-       const q = query(collection(db, "messages"), orderBy("createdAt", "asc"));
-       onSnapshot(q, (snapshot) => {
-           const chatBox = document.getElementById("chatBox");
-           chatBox.innerHTML = "";
-           snapshot.forEach((doc) => {
-               const data = doc.data();
-               const div = document.createElement("div");
-               div.className = "message" + (data.name === userName ? " my-message" : "");
-               div.innerHTML = `<strong>${data.name}</strong>: ${data.text}`;
-               chatBox.appendChild(div);
-           });
-           chatBox.scrollTop = chatBox.scrollHeight;
-       });
-</script>
+<title>Özel Sohbet Sistemi</title>
 <style>
-       body { font-family: Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; display: flex; justify-content: center; }
-       .chat-container { width: 100%; max-width: 500px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 80vh; overflow: hidden; }
-       .chat-header { background: #075e54; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-       .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-       .message { background: #e5ddd5; padding: 10px; border-radius: 8px; max-width: 70%; word-break: break-word; }
-       .my-message { background: #dcf8c6; align-self: flex-end; }
-       .chat-input { display: flex; padding: 10px; background: #f0f0f0; border-top: 1px solid #ddd; }
-       .chat-input input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
-       .chat-input button { background: #075e54; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 4px; cursor: pointer; }
-       .chat-input button:hover { background: #004d40; }
+       body {
+           background-color: #0d1117;
+           color: #c9d1d9;
+           font-family: monospace;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
+       .box {
+           background: #161b22;
+           padding: 30px;
+           border-radius: 8px;
+           border: 1px solid #30363d;
+           text-align: center;
+           box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+           width: 320px;
+       }
+       input, textarea {
+           width: 100%;
+           padding: 10px;
+           margin: 10px 0;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           color: #fff;
+           border-radius: 4px;
+           box-sizing: border-box;
+       }
+       button {
+           width: 100%;
+           padding: 10px;
+           background: #238636;
+           color: white;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+           font-weight: bold;
+       }
+       button:hover {
+           background: #2ea043;
+       }
+       .error {
+           color: #f85149;
+           font-size: 12px;
+           margin-top: 5px;
+       }
+       .hidden {
+           display: none;
+       }
+       .chat-area {
+           text-align: left;
+           height: 150px;
+           background: #0d1117;
+           border: 1px solid #30363d;
+           border-radius: 4px;
+           padding: 10px;
+           overflow-y: auto;
+           margin-bottom: 10px;
+           font-size: 13px;
+       }
 </style>
 </head>
 <body>
-<div class="chat-container">
-<div class="chat-header">
-<h3>Sohbet Odası</h3>
-<span id="userInfo" style="font-size: 14px;"></span>
+<!-- GİRİŞ EKRANI -->
+<div id="loginSection" class="box">
+<h2>🔒 Güvenli Alan</h2>
+<p style="font-size: 13px; color: #8b949e;">Devam etmek için giriş yapın</p>
+<input type="text" id="username" placeholder="Kullanıcı Adı">
+<input type="password" id="password" placeholder="Şifre">
+<button onclick="checkLogin()">Giriş Yap</button>
+<div id="errorMsg" class="error"></div>
 </div>
-<div class="chat-messages" id="chatBox"></div>
-<div class="chat-input">
-<input type="text" id="messageInput" placeholder="Bir mesaj yazın..." onkeypress="handleKeyPress(event)">
+<!-- ŞİFRE DOĞRUYSA AÇILACAK SOHBET EKRANI -->
+<div id="chatSection" class="box hidden" style="width: 380px;">
+<h2 style="color: #58a6ff; font-size: 18px; margin-top: 0;">💬 Sohbet Odası</h2>
+<div id="chatMessages" class="chat-area">
+<div><b>Sistem:</b> Sohbet odasına hoş geldin!</div>
+</div>
+<input type="text" id="chatInput" placeholder="Mesajınızı yazın...">
 <button onclick="sendMessage()">Gönder</button>
+<button onclick="logout()" style="background: #da3633; margin-top: 10px;">Çıkış Yap</button>
 </div>
-</div>
+<script>
+       function checkLogin() {
+           var user = document.getElementById("username").value;
+           var pass = document.getElementById("password").value;
+           // Kullanıcı adı: admin, Şifre: 1234
+           if (user === "admin" && pass === "1234") {
+               document.getElementById("loginSection").classList.add("hidden");
+               document.getElementById("chatSection").classList.remove("hidden");
+           } else {
+               document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
+           }
+       }
+       function sendMessage() {
+           var input = document.getElementById("chatInput");
+           var messages = document.getElementById("chatMessages");
+           if (input.value.trim() !== "") {
+               messages.innerHTML += "<div><b>Sen:</b> " + input.value + "</div>";
+               input.value = "";
+               messages.scrollTop = messages.scrollHeight;
+           }
+       }
+       function logout() {
+           document.getElementById("username").value = "";
+           document.getElementById("password").value = "";
+           document.getElementById("errorMsg").innerText = "";
+           document.getElementById("chatSection").classList.add("hidden");
+           document.getElementById("loginSection").classList.remove("hidden");
+       }
+</script>
 </body>
 </html>
 
