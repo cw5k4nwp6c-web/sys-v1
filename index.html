@@ -2,283 +2,294 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Güvenli Sohbet Odası</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VIP Lounge</title>
 <style>
-
-        body {
-
-            background-color: #0d1117;
-
-            color: #c9d1d9;
-
-            font-family: monospace;
-
-            display: flex;
-
-            justify-content: center;
-
-            align-items: center;
-
-            height: 100vh;
-
-            margin: 0;
-
-        }
-
-        .box {
-
-            background: #161b22;
-
-            padding: 30px;
-
-            border-radius: 8px;
-
-            border: 1px solid #30363d;
-
-            text-align: center;
-
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-
-            width: 320px;
-
-        }
-
-        input {
-
-            width: 100%;
-
-            padding: 10px;
-
-            margin: 10px 0;
-
-            background: #0d1117;
-
-            border: 1px solid #30363d;
-
-            color: #fff;
-
-            border-radius: 4px;
-
-            box-sizing: border-box;
-
-        }
-
-        button {
-
-            width: 100%;
-
-            padding: 10px;
-
-            background: #238636;
-
-            color: white;
-
-            border: none;
-
-            border-radius: 4px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
-        }
-
-        button:hover {
-
-            background: #2ea043;
-
-        }
-
-        .error {
-
-            color: #f85149;
-
-            font-size: 12px;
-
-            margin-top: 5px;
-
-        }
-
-        .hidden {
-
-            display: none;
-
-        }
-
-        .chat-area {
-
-            text-align: left;
-
-            height: 200px;
-
-            background: #0d1117;
-
-            border: 1px solid #30363d;
-
-            border-radius: 4px;
-
-            padding: 10px;
-
-            overflow-y: auto;
-
-            margin-bottom: 10px;
-
-            font-size: 13px;
-
-        }
-
-        .msg {
-
-            margin-bottom: 6px;
-
-            word-break: break-all;
-
-        }
+       * {
+           box-sizing: border-box;
+           margin: 0;
+           padding: 0;
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       }
+       body {
+           background-color: #0f111a;
+           color: #e2e8f0;
+           height: 100vh;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+       }
+       .container {
+           width: 100%;
+           max-width: 420px;
+           height: 100%;
+           max-height: 750px;
+           background: #1a1c29;
+           border-radius: 16px;
+           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+           display: flex;
+           flex-direction: column;
+           overflow: hidden;
+           border: 1px solid #2d3148;
+       }
+       /* Giriş Ekranı */
+       #login-screen {
+           padding: 40px 24px;
+           display: flex;
+           flex-direction: column;
+           justify-content: center;
+           align-items: center;
+           height: 100%;
+           text-align: center;
+       }
+       .casino-logo {
+           font-size: 32px;
+           font-weight: 700;
+           color: #d4af37;
+           margin-bottom: 8px;
+           letter-spacing: 2px;
+       }
+       .casino-subtitle {
+           font-size: 14px;
+           color: #94a3b8;
+           margin-bottom: 32px;
+       }
+       .input-group {
+           width: 100%;
+           margin-bottom: 16px;
+       }
+       input {
+           width: 100%;
+           padding: 14px 16px;
+           background: #0f111a;
+           border: 1px solid #2d3148;
+           border-radius: 8px;
+           color: #fff;
+           font-size: 16px;
+           outline: none;
+           transition: border-color 0.2s;
+       }
+       input:focus {
+           border-color: #d4af37;
+       }
+       .btn {
+           width: 100%;
+           padding: 14px;
+           background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+           border: none;
+           border-radius: 8px;
+           color: #0f111a;
+           font-size: 16px;
+           font-weight: 700;
+           cursor: pointer;
+           transition: opacity 0.2s;
+       }
+       .btn:hover {
+           opacity: 0.9;
+       }
+       .error-msg {
+           color: #ef4444;
+           font-size: 13px;
+           margin-top: 12px;
+           display: none;
+       }
+       /* Chat Ekranı */
+       #chat-screen {
+           display: none;
+           flex-direction: column;
+           height: 100%;
+       }
+       .chat-header {
+           padding: 16px 20px;
+           background: #141622;
+           border-bottom: 1px solid #2d3148;
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+       }
+       .chat-title {
+           font-size: 16px;
+           font-weight: 600;
+           color: #d4af37;
+       }
+       .clear-btn {
+           background: transparent;
+           border: 1px solid #ef4444;
+           color: #ef4444;
+           padding: 6px 12px;
+           border-radius: 6px;
+           font-size: 12px;
+           cursor: pointer;
+           transition: background 0.2s, color 0.2s;
+       }
+       .clear-btn:hover {
+           background: #ef4444;
+           color: #fff;
+       }
+       .chat-messages {
+           flex: 1;
+           padding: 20px;
+           overflow-y: auto;
+           display: flex;
+           flex-direction: column;
+           gap: 12px;
+       }
+       .message {
+           max-width: 75%;
+           padding: 10px 14px;
+           border-radius: 12px;
+           font-size: 14px;
+           line-height: 1.4;
+           word-wrap: break-word;
+       }
+       .message.user {
+           background: #d4af37;
+           color: #0f111a;
+           align-self: flex-end;
+           border-bottom-right-radius: 2px;
+       }
+       .message.other {
+           background: #2d3148;
+           color: #e2e8f0;
+           align-self: flex-start;
+           border-bottom-left-radius: 2px;
+       }
+       .chat-input-area {
+           padding: 16px 20px;
+           background: #141622;
+           border-top: 1px solid #2d3148;
+           display: flex;
+           gap: 10px;
+       }
+       .chat-input-area input {
+           flex: 1;
+       }
+       .send-btn {
+           padding: 0 20px;
+           background: #d4af37;
+           border: none;
+           border-radius: 8px;
+           color: #0f111a;
+           font-weight: 600;
+           cursor: pointer;
+       }
 </style>
 </head>
 <body>
-<!-- GİRİŞ EKRANI -->
-<div id="loginSection" class="box">
-<h2>🔒 Güvenli Alan</h2>
-<p style="font-size: 13px; color: #8b949e;">Devam etmek için giriş yapın</p>
-<input type="text" id="username" placeholder="Kullanıcı Adı">
-<input type="password" id="password" placeholder="Şifre">
-<button onclick="checkLogin()">Giriş Yap</button>
-<div id="errorMsg" class="error"></div>
+<div class="container">
+<!-- Giriş Ekranı (Casino Temalı) -->
+<div id="login-screen">
+<div class="casino-logo">VIP CASINO</div>
+<div class="casino-subtitle">Özel Masa Girişi</div>
+<div class="input-group">
+<input type="text" id="username-input" placeholder="Kullanıcı Adı (sys-v1 veya sys-v2)" onkeypress="checkLoginEnter(event)" style="margin-bottom: 12px;">
+<input type="password" id="access-code" placeholder="VIP Kodu / Şifre" onkeypress="checkLoginEnter(event)">
 </div>
-<!-- SOHBET EKRANI -->
-<div id="chatSection" class="box hidden" style="width: 400px;">
-<h2 style="color: #58a6ff; font-size: 18px; margin-top: 0;">💬 Canlı Sohbet Odası</h2>
-<div id="chatMessages" class="chat-area">
-<div class="msg"><b>Sistem:</b> Bağlantı kuruluyor...</div>
+<button class="btn" onclick="enterLounge()">GİRİŞ YAP</button>
+<div id="error-message" class="error-msg">Hatalı Kullanıcı Adı veya VIP Kodu!</div>
 </div>
-<input type="text" id="chatInput" placeholder="Mesajınızı yazın..." onkeydown="if(event.key==='Enter') sendMessage()">
-<button onclick="sendMessage()">Gönder</button>
-<button onclick="logout()" style="background: #da3633; margin-top: 10px;">Çıkış Yap</button>
+<!-- Chat Ekranı -->
+<div id="chat-screen">
+<div class="chat-header">
+<div class="chat-title">VIP Masa #7</div>
+<button class="clear-btn" onclick="clearChat()">Temizle</button>
 </div>
-<!-- FIREBASE BAĞLANTISI VE MANTIK -->
+<div class="chat-messages" id="message-container">
+<!-- Mesajlar dinamik yüklenecek -->
+</div>
+<div class="chat-input-area">
+<input type="text" id="message-input" placeholder="Mesaj yaz..." onkeypress="checkChatEnter(event)">
+<button class="send-btn" onclick="sendMessage()">Gönder</button>
+</div>
+</div>
+</div>
+<!-- Firebase Modüler SDK CDN -->
 <script type="module">
-
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-
-            apiKey: "AIzaSyD2Q7JlHgD4guwrSPDMRIqatwIBLP7s3cI",
-
-            authDomain: "sys-v1.firebaseapp.com",
-
-            projectId: "sys-v1",
-
-            storageBucket: "sys-v1.firebasestorage.app",
-
-            messagingSenderId: "387697999264",
-
-            appId: "1:387697999264:web:8eefcb28d64a2b7c5478c5"
-
-        };
-
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
-
-        let activeUser = "";
-
-        window.checkLogin = function() {
-
-            var user = document.getElementById("username").value.trim();
-
-            var pass = document.getElementById("password").value.trim();
-
-            // sys-v1 veya sys-v2 kullanıcıları için şifre kontrolü
-
-            if ((user === "sys-v1" || user === "sys-v2") && pass === "1asdfg22") {
-
-                activeUser = user;
-
-                document.getElementById("loginSection").classList.add("hidden");
-
-                document.getElementById("chatSection").classList.remove("hidden");
-
-                loadMessages();
-
-            } else {
-
-                document.getElementById("errorMsg").innerText = "Hatalı kullanıcı adı veya şifre!";
-
-            }
-
-        }
-
-        window.sendMessage = async function() {
-
-            var input = document.getElementById("chatInput");
-
-            if (input.value.trim() !== "") {
-
-                try {
-
-                    await addDoc(collection(db, "messages"), {
-
-                        user: activeUser,
-
-                        text: input.value,
-
-                        time: serverTimestamp()
-
-                    });
-
-                    input.value = "";
-
-                } catch (e) {
-
-                    console.error("Mesaj gönderilemedi: ", e);
-
-                }
-
-            }
-
-        }
-
-        function loadMessages() {
-
-            const q = query(collection(db, "messages"), orderBy("time", "asc"));
-
-            onSnapshot(q, (snapshot) => {
-
-                let messagesDiv = document.getElementById("chatMessages");
-
-                messagesDiv.innerHTML = "";
-
-                snapshot.forEach((doc) => {
-
-                    let data = doc.data();
-
-                    messagesDiv.innerHTML += `<div class="msg"><b>${data.user}:</b> ${data.text}</div>`;
-
-                });
-
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-            });
-
-        }
-
-        window.logout = function() {
-
-            document.getElementById("username").value = "";
-
-            document.getElementById("password").value = "";
-
-            document.getElementById("errorMsg").innerText = "";
-
-            document.getElementById("chatSection").classList.add("hidden");
-
-            document.getElementById("loginSection").classList.remove("hidden");
-
-        }
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+       import { getDatabase, ref, push, remove, onValue } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+       // BURAYA KENDİ FIREBASE BİLGİLERİNİ YAPIŞTIRACAKSIN
+       const firebaseConfig = {
+           apiKey: "SENIN_API_KEY",
+           authDomain: "SENIN_PROJE.firebaseapp.com",
+           databaseURL: "https://SENIN_PROJE-default-rtdb.firebaseio.com",
+           projectId: "SENIN_PROJE",
+           storageBucket: "SENIN_PROJE.appspot.com",
+           messagingSenderId: "SENIN_ID",
+           appId: "SENIN_APP_ID"
+       };
+       const app = initializeApp(firebaseConfig);
+       const db = getDatabase(app);
+       const VALID_USERS = {
+           "sys-v1": "1asdfg22",
+           "sys-v2": "1asdfg22"
+       };
+       let currentUsername = "";
+       window.enterLounge = function() {
+           const userInput = document.getElementById('username-input');
+           const codeInput = document.getElementById('access-code');
+           const errorMsg = document.getElementById('error-message');
+           const enteredUser = userInput.value.trim().toLowerCase();
+           const enteredCode = codeInput.value.trim();
+           if (VALID_USERS[enteredUser] && VALID_USERS[enteredUser] === enteredCode) {
+               currentUsername = enteredUser;
+               errorMsg.style.display = 'none';
+               document.getElementById('login-screen').style.display = 'none';
+               document.getElementById('chat-screen').style.display = 'flex';
+               listenMessages();
+           } else {
+               errorMsg.style.display = 'block';
+               userInput.value = '';
+               codeInput.value = '';
+               userInput.focus();
+           }
+       };
+       window.checkLoginEnter = function(e) {
+           if (e.key === 'Enter') {
+               window.enterLounge();
+           }
+       };
+       function listenMessages() {
+           const container = document.getElementById('message-container');
+           const messagesRef = ref(db, 'vip_messages');
+           onValue(messagesRef, (snapshot) => {
+               container.innerHTML = '';
+               const data = snapshot.val();
+               if (data) {
+                   Object.keys(data).forEach((key) => {
+                       const msg = data[key];
+                       const msgDiv = document.createElement('div');
+                       msgDiv.className = 'message ' + (msg.sender === currentUsername ? 'user' : 'other');
+                       msgDiv.textContent = msg.text;
+                       container.appendChild(msgDiv);
+                   });
+                   container.scrollTop = container.scrollHeight;
+               }
+           });
+       }
+       window.sendMessage = function() {
+           const input = document.getElementById('message-input');
+           const text = input.value.trim();
+           if (!text || !currentUsername) return;
+           const messagesRef = ref(db, 'vip_messages');
+           push(messagesRef, {
+               sender: currentUsername,
+               text: text,
+               timestamp: Date.now()
+           });
+           input.value = '';
+       };
+       window.checkChatEnter = function(e) {
+           if (e.key === 'Enter') {
+               window.sendMessage();
+           }
+       };
+       window.clearChat = function() {
+           if (confirm("Sohbeti temizlemek istediğine emin misin?")) {
+               const messagesRef = ref(db, 'vip_messages');
+               remove(messagesRef);
+               document.getElementById('message-container').innerHTML = '';
+           }
+       };
 </script>
 </body>
 </html>
- 
